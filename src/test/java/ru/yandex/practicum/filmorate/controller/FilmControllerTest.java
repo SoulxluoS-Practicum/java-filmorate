@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
@@ -23,7 +25,7 @@ class FilmControllerTest {
             .name("filmValid")
             .description("D".repeat(200))
             .duration(100L)
-            .releaseDate("1985-12-28")
+            .releaseDate(LocalDate.parse("1985-12-28"))
             .build();
         filmController.createFilm(filmValid);
         assertTrue(filmController.getFilms().contains(filmValid), "Добавление корректного filmValid не прошло валидацию");
@@ -49,7 +51,7 @@ class FilmControllerTest {
         }
         assertFalse(filmController.getFilms().contains(filmFailDur), "Некорректная валидация FilmFailDur: отрицательный duration не должен проходить");
 
-        Film filmFailDate = filmValid.toBuilder().id(null).name("filmFailDate").releaseDate("1985-12-27").build();
+        Film filmFailDate = filmValid.toBuilder().id(null).name("filmFailDate").releaseDate(LocalDate.parse("1985-12-27")).build();
         try {
             filmController.createFilm(filmFailDate);
         } catch (ValidationException ignored) {
@@ -77,7 +79,7 @@ class FilmControllerTest {
             .name("FilmValid")
             .description("D".repeat(200))
             .duration(100L)
-            .releaseDate("1985-12-28")
+            .releaseDate(LocalDate.parse("1985-12-28"))
             .build();
         filmController.createFilm(filmValid);
 
@@ -85,7 +87,7 @@ class FilmControllerTest {
             .name("FilmValidUpdate")
             .description("U".repeat(200))
             .duration(200L)
-            .releaseDate("2000-01-01")
+            .releaseDate(LocalDate.parse("2000-01-01"))
             .build();
         filmController.updateFilm(filmValidUpdate);
         assertEquals(filmValid, filmValidUpdate, "Корректное обновление filmValidUpdate не прошло валидацию");
@@ -94,7 +96,7 @@ class FilmControllerTest {
             .name("FilmFailUpdate")
             .description("F".repeat(201))
             .duration(-333L)
-            .releaseDate("1900-01-01")
+            .releaseDate(LocalDate.parse("1900-01-01"))
             .build();
         try {
             filmController.updateFilm(filmFailUpdate);

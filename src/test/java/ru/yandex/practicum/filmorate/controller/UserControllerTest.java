@@ -20,7 +20,7 @@ class UserControllerTest {
             .login("LoginValid")
             .name("Name Valid")
             .email("emailvalid@yandex.ru")
-            .birthday("2000-07-05")
+            .birthday(LocalDate.parse("2000-07-05"))
             .build();
         userController.createUser(userValid);
         assertTrue(userController.getUsers().contains(userValid), "Добавление корректного userValid не прошло валидацию");
@@ -94,7 +94,7 @@ class UserControllerTest {
         User userFailBirthday = userValid.toBuilder()
             .id(null)
             .email("emailfailbirthday@yandex.ru")
-            .birthday(invalidBirthday)
+            .birthday(LocalDate.parse(invalidBirthday))
             .build();
         try {
             userController.createUser(userFailBirthday);
@@ -123,7 +123,7 @@ class UserControllerTest {
             .login("LoginValid")
             .name("Name Valid")
             .email("emailvalid@yandex.ru")
-            .birthday("2000-07-05")
+            .birthday(LocalDate.parse("2000-07-05"))
             .build();
         userController.createUser(userValid);
 
@@ -131,7 +131,7 @@ class UserControllerTest {
             .login("LoginValidUpdate")
             .name("Name Valid Update")
             .email("emailvalidupdate@yandex.ru")
-            .birthday("2014-07-05")
+            .birthday(LocalDate.parse("2014-07-05"))
             .build();
         userController.updateUser(userValidUpdate);
         assertEquals(userValid, userValidUpdate, "Корректное обновление userValidUpdate не прошло валидацию");
@@ -146,7 +146,7 @@ class UserControllerTest {
             .login("Login Fail Update")
             .name("Name Fail Update")
             .email("")
-            .birthday("2030-07-05")
+            .birthday(LocalDate.parse("2030-07-05"))
             .build();
         try {
             userController.updateUser(userFailUpdate);

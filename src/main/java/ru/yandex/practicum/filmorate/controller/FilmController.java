@@ -1,15 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import ch.qos.logback.classic.Level;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +17,7 @@ import java.util.Map;
 @Slf4j
 public class FilmController {
 
-    private static final Instant MIN_DATE = LocalDate.of(1985, 12, 28).atStartOfDay(ZoneOffset.UTC).toInstant();
+    private static final LocalDate MIN_DATE = LocalDate.of(1985, 12, 28);
     private static final int MAX_DESC_LENGTH = 200;
     private final Map<Long, Film> films = new HashMap<>();
 
@@ -34,7 +32,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film createFilm(@RequestBody Film film) {
+    public Film createFilm(@Valid @RequestBody Film film) {
         log.debug("Запрос на создание нового фильма");
         validateName(film);
         validateDescription(film);
@@ -47,7 +45,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         log.debug("Запрос на изменение данных фильма(id = {})", film.getId());
         if (film.getId() == null) {
             throw new ValidationException("Id изменяемого фильма не указан");
@@ -93,7 +91,7 @@ public class FilmController {
     }
 
     private void validateReleaseDate(Film film) {
-        if (parseReleaseDate(film.getReleaseDate()).isBefore(MIN_DATE)) {
+        if (film.getReleaseDate().isBefore(MIN_DATE)) {
             throw new ValidationException("Дата релиза фильма не должна быть раньше " + MIN_DATE);
         }
     }
@@ -111,11 +109,5 @@ public class FilmController {
             .max()
             .orElse(0);
         return ++currentMaxId;
-    }
-
-    private Instant parseReleaseDate(String releaseDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(releaseDate, formatter).atStartOfDay()
-            .toInstant(ZoneOffset.UTC);
     }
 }
