@@ -51,7 +51,7 @@ public class FilmController {
             throw new ValidationException("Id изменяемого фильма не указан");
         }
         if (!films.containsKey(film.getId())) {
-            throw new ValidationException("Фильм с id = " + film.getId() + " не найден");
+            throw new ValidationException("Фильм с id = %s не найден", film.getId());
         }
         Film oldFilm = films.get(film.getId());
         if (film.getName() != null) {
@@ -86,13 +86,13 @@ public class FilmController {
 
     private void validateDescription(Film film) {
         if (film.getDescription().length() > MAX_DESC_LENGTH) {
-            throw new ValidationException("Описание фильма не должно быть длиннее " + MAX_DESC_LENGTH + " символов");
+            throw new ValidationException("Описание фильма не должно быть длиннее %s символов", MAX_DESC_LENGTH);
         }
     }
 
     private void validateReleaseDate(Film film) {
         if (film.getReleaseDate().isBefore(MIN_DATE)) {
-            throw new ValidationException("Дата релиза фильма не должна быть раньше " + MIN_DATE);
+            throw new ValidationException("Дата релиза фильма не должна быть раньше %s", MIN_DATE);
         }
     }
 

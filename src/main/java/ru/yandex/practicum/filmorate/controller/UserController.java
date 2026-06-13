@@ -53,7 +53,7 @@ public class UserController {
             throw new ValidationException("Id пользователя не указан");
         }
         if (!users.containsKey(user.getId())) {
-            throw new ValidationException("Пользователь с id = " + user.getId() + " не найден");
+            throw new ValidationException("Пользователь с id = %s не найден", user.getId());
         }
         User oldUser = users.get(user.getId());
         if (user.getEmail() != null) {
@@ -107,7 +107,7 @@ public class UserController {
             .filter(user1 -> !Objects.equals(user1.getId(), user.getId()))
             .anyMatch(user1 -> user1.getEmail().equals(user.getEmail()));
         if (isDuplicateEmail) {
-            throw new ValidationException("Пользователь с почтой = " + user.getEmail() + " уже существует");
+            throw new ValidationException("Пользователь с почтой = %s уже существует", user.getEmail());
         }
     }
 
