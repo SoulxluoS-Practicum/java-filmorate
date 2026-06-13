@@ -4,8 +4,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -15,16 +17,17 @@ import java.time.LocalDate;
  */
 @Data
 @Builder(toBuilder = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
-    private Long id;
+    Long id;
     @NotNull
     @Email(message = "Не корректная запись электронной почты")
-    private String email;
+    String email;
     @NotBlank(message = "Логин не может быть пустым и содержать пробелы")
-    private String login;
-    private String name;
+    String login;
+    String name;
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
-    private LocalDate birthday;
+    LocalDate birthday;
 }
