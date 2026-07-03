@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -71,14 +72,14 @@ class FilmControllerTest {
         Film filmEmpty = Film.builder().build();
         try {
             filmController.update(filmEmpty);
-        } catch (ValidationException ignored) {
+        } catch (ValidationException | NotFoundException ignored) {
         }
         assertFalse(filmController.getAll().contains(filmEmpty), "Пустой FilmEmpty не должен быть обновлен");
 
         Film filmFailId = Film.builder().id(-1L).name("FilmUnknown").build();
         try {
             filmController.update(filmFailId);
-        } catch (ValidationException ignored) {
+        } catch (ValidationException | NotFoundException ignored) {
         }
         assertFalse(filmController.getAll().contains(filmFailId), "FilmFailId с не корректным Id не должен быть обновлен");
 
@@ -107,7 +108,7 @@ class FilmControllerTest {
             .build();
         try {
             filmController.update(filmFailUpdate);
-        } catch (ValidationException ignored) {
+        } catch (ValidationException | NotFoundException ignored) {
         }
         assertNotEquals(filmValid, filmFailUpdate, "Некорректное обновление filmFailUpdate прошло валидацию");
     }
