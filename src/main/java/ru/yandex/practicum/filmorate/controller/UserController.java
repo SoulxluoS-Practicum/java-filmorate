@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public Optional<User> getByID(@PathVariable long id) {
+    public Optional<User> getById(@PathVariable long id) {
         log.debug("Запрос на получение пользователя по id = {}", id);
         return userStorage.getById(id);
     }
