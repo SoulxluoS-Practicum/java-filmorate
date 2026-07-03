@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import ch.qos.logback.classic.Level;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -24,12 +26,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getFilms() {
+    public Optional<Film> getById(long filmId) {
+        return Optional.ofNullable(films.get(filmId));
+    }
+
+    @Override
+    public Collection<Film> getAll() {
         return films.values();
     }
 
     @Override
-    public Film createFilm(Film film) {
+    public Film create(Film film) {
         validateName(film);
         validateDescription(film);
         validateReleaseDate(film);
@@ -40,12 +47,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film updateFilm(Film film) {
+    public Film update(Film film) {
         if (film.getId() == null) {
             throw new ValidationException("Id изменяемого фильма не указан");
         }
         if (!films.containsKey(film.getId())) {
-            throw new ValidationException("Фильм с id = %s не найден", film.getId());
+            throw new NotFoundException("Фильм с id = %s не найден", film.getId());
         }
         Film oldFilm = films.get(film.getId());
         if (film.getName() != null) {

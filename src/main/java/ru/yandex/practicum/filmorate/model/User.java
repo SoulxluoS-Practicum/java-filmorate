@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * User
@@ -30,4 +32,12 @@ public class User {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     LocalDate birthday;
+    Set<Long> friends;
+
+    public Set<Long> getFriends() {
+        if (friends == null) {
+            friends = new HashSet<>();
+        }
+        return friends;
+    }
 }

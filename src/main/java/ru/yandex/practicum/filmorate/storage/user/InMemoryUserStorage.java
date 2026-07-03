@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import ch.qos.logback.classic.Level;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -20,12 +21,17 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> getUsers() {
-        return List.of();
+    public Optional<User> getById(long userId) {
+        return Optional.ofNullable(users.get(userId));
     }
 
     @Override
-    public User createUser(User user) {
+    public Collection<User> getAll() {
+        return users.values();
+    }
+
+    @Override
+    public User create(User user) {
         validateEmail(user);
         validateDuplicateEmail(user);
         validateLogin(user);
@@ -39,12 +45,12 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User updateUser(User user) {
+    public User update(User user) {
         if (user.getId() == null) {
             throw new ValidationException("Id пользователя не указан");
         }
         if (!users.containsKey(user.getId())) {
-            throw new ValidationException("Пользователь с id = %s не найден", user.getId());
+            throw new NotFoundException("Пользователь с id = %s не найден", user.getId());
         }
         User oldUser = users.get(user.getId());
         if (user.getEmail() != null) {

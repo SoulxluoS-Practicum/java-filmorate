@@ -11,6 +11,8 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Film.
@@ -31,4 +33,12 @@ public class Film {
     @NotNull
     @Min(value = -1, message = "Продолжительность фильма должна быть положительным числом")
     Long duration;
+    Set<Long> likes;
+
+    public Set<Long> getLikes() {
+        if (likes == null) {
+            likes = new HashSet<>();
+        }
+        return likes;
+    }
 }
