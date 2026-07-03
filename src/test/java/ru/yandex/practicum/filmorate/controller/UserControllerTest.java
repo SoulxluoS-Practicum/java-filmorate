@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -112,14 +113,14 @@ class UserControllerTest {
         User userEmpty = User.builder().build();
         try {
             userController.update(userEmpty);
-        } catch (ValidationException ignored) {
+        } catch (ValidationException | NotFoundException ignored) {
         }
         assertFalse(userController.getAll().contains(userEmpty), "Пустой UserEmpty не должен быть обновлен");
 
         User userFailId = User.builder().id(-1L).name("UserUnknown").build();
         try {
             userController.update(userFailId);
-        } catch (ValidationException ignored) {
+        } catch (ValidationException | NotFoundException ignored) {
         }
         assertFalse(userController.getAll().contains(userFailId), "UserFailId с не корректным Id не должен быть обновлен");
 
@@ -154,7 +155,7 @@ class UserControllerTest {
             .build();
         try {
             userController.update(userFailUpdate);
-        } catch (ValidationException ignored) {
+        } catch (ValidationException | NotFoundException ignored) {
         }
         assertNotEquals(userValid, userFailUpdate, "Некорректное обновление userFailUpdate прошло валидацию");
     }
