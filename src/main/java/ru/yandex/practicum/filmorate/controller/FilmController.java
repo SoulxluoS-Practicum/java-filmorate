@@ -16,6 +16,8 @@ import java.util.Optional;
 @Slf4j
 public class FilmController {
 
+    private static final String FILM_LIKE_BY_USER_PATH = "/{id}/like/{userId}";
+    private static final String POPULAR_PATH = "/popular";
     private final FilmStorage filmStorage;
     private final FilmService filmService;
 
@@ -53,7 +55,7 @@ public class FilmController {
         return film;
     }
 
-    @PutMapping("/{id}/like/{userId}")
+    @PutMapping(FILM_LIKE_BY_USER_PATH)
     public Film addLike(@PathVariable long id, @PathVariable long userId) {
         log.debug("Запрос на добавления лайка(film id = {}, userId = {})", id, userId);
         Film film = filmService.addLike(id, userId);
@@ -61,7 +63,7 @@ public class FilmController {
         return film;
     }
 
-    @DeleteMapping("/{id}/like/{userId}")
+    @DeleteMapping(FILM_LIKE_BY_USER_PATH)
     public Film deleteLike(@PathVariable long id, @PathVariable long userId) {
         log.debug("Запрос на удаление лайка(film id = {}, userId = {})", id, userId);
         Film film = filmService.removeLike(id, userId);
@@ -69,7 +71,7 @@ public class FilmController {
         return film;
     }
 
-    @GetMapping("/popular")
+    @GetMapping(POPULAR_PATH)
     public Collection<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
         log.debug("Запрос на получение списка популярных фильмов(count = {})", count);
         return filmService.getPopular(count);

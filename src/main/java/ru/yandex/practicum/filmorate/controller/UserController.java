@@ -16,6 +16,9 @@ import java.util.Optional;
 @Slf4j
 public class UserController {
 
+    private static final String USER_FRIENDS_PATH = "/{id}/friends";
+    private static final String USER_FRIEND_PATH = USER_FRIENDS_PATH + "/{friendId}";
+    private static final String COMMON_FRIENDS_PATH = USER_FRIENDS_PATH + "/common/{otherId}";
     private final UserStorage userStorage;
     private final UserService userService;
 
@@ -53,27 +56,27 @@ public class UserController {
         return user;
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
+    @PutMapping(USER_FRIEND_PATH)
     public void addFriend(@PathVariable long id, @PathVariable long friendId) {
         log.debug("Запрос на добавления друга(user id = {}, friendId = {})", id, friendId);
         userService.addFriend(id, friendId);
         log.info("Пользователи добавлены в друзья(user id = {}, friendId = {})", id, friendId);
     }
 
-    @DeleteMapping("/{id}/friends/{friendId}")
+    @DeleteMapping(USER_FRIEND_PATH)
     public void deleteFriend(@PathVariable long id, @PathVariable long friendId) {
         log.debug("Запрос на удаление друга(user id = {}, friendId = {})", id, friendId);
         userService.deleteFriend(id, friendId);
         log.info("Пользователи удалены из друзей(user id = {}, friendId = {})", id, friendId);
     }
 
-    @GetMapping("/{id}/friends")
+    @GetMapping(USER_FRIENDS_PATH)
     public Collection<User> getFriends(@PathVariable long id) {
         log.debug("Запрос на получение списка друзей(user id = {})", id);
         return userService.getFriends(id);
     }
 
-    @GetMapping("/{id}/friends/common/{otherId}")
+    @GetMapping(COMMON_FRIENDS_PATH)
     public Collection<User> getCommonFriends(@PathVariable long id, @PathVariable long otherId) {
         log.debug("Запрос на получение списка общих друзей(user id = {}, otherId = {})", id, otherId);
         return userService.getCommonFriends(id, otherId);

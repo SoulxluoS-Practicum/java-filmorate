@@ -29,18 +29,18 @@ public class FilmService {
 
     public Film addLike(long filmId, long userId) {
         Film film = filmStorage.getById(filmId)
-            .orElseThrow(() -> new NotFoundException("Фильм id = %s не найден".formatted(filmId)));
+            .orElseThrow(() -> NotFoundException.film(filmId));
         userStorage.getById(userId)
-            .orElseThrow(() -> new NotFoundException("Пользователь id = %s не найден".formatted(userId)));
+            .orElseThrow(() -> NotFoundException.user(userId));
         film.getLikes().add(userId);
         return film;
     }
 
     public Film removeLike(long filmId, long userId) {
         Film film = filmStorage.getById(filmId)
-            .orElseThrow(() -> new NotFoundException("Фильм id = %s не найден".formatted(filmId)));
+            .orElseThrow(() -> NotFoundException.film(filmId));
         userStorage.getById(userId)
-            .orElseThrow(() -> new NotFoundException("Пользователь id = %s не найден".formatted(userId)));
+            .orElseThrow(() -> NotFoundException.user(userId));
         film.getLikes().remove(userId);
         return film;
     }

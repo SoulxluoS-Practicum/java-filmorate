@@ -50,7 +50,7 @@ public class InMemoryUserStorage implements UserStorage {
             throw new ValidationException("Id пользователя не указан");
         }
         if (!users.containsKey(user.getId())) {
-            throw new NotFoundException("Пользователь с id = %s не найден", user.getId());
+            throw NotFoundException.user(user.getId());
         }
         User oldUser = users.get(user.getId());
         if (user.getEmail() != null) {
