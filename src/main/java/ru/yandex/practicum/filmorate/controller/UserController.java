@@ -2,48 +2,46 @@ package ru.yandex.practicum.filmorate.controller;
 
 import ch.qos.logback.classic.Level;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 @Slf4j
 public class UserController {
 
     private static final String USER_FRIENDS_PATH = "/{id}/friends";
     private static final String USER_FRIEND_PATH = USER_FRIENDS_PATH + "/{friendId}";
     private static final String COMMON_FRIENDS_PATH = USER_FRIENDS_PATH + "/common/{otherId}";
-    private final UserStorage userStorage;
     private final UserService userService;
 
-    public UserController(UserStorage userStorage, UserService userService) {
-        this.userStorage = userStorage;
-        this.userService = userService;
+    static {
         ((ch.qos.logback.classic.Logger) log).setLevel(Level.DEBUG);
     }
 
     @GetMapping("/{id}")
     public Optional<User> getById(@PathVariable long id) {
         log.debug("Запрос на получение пользователя по id = {}", id);
-        return userStorage.getById(id);
+        return userService.getById(id);
     }
 
     @GetMapping
     public Collection<User> getAll() {
         log.debug("Запрос на получение списка пользователей");
-        return userStorage.getAll();
+        return userService.getAll();
     }
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.debug("Запрос на создание нового пользователя");
-        user = userStorage.create(user);
+        user = userService.create(user);
         log.info("Создан новый пользователь(id = {})", user.getId());
         return user;
     }
@@ -51,7 +49,7 @@ public class UserController {
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         log.debug("Запрос на изменение данных пользователя(id = {})", user.getId());
-        user = userStorage.update(user);
+        user = userService.update(user);
         log.info("Данные пользователя(id = {}) изменены", user.getId());
         return user;
     }

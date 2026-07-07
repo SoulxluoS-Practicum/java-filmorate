@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Optional;
 
 @Service
 public class FilmService {
@@ -18,6 +19,22 @@ public class FilmService {
     public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+    }
+
+    public Optional<Film> getById(long filmId) {
+        return filmStorage.getById(filmId);
+    }
+
+    public Collection<Film> getAll() {
+        return filmStorage.getAll();
+    }
+
+    public Film create(Film film) {
+        return filmStorage.create(film);
+    }
+
+    public Film update(Film film) {
+        return filmStorage.update(film);
     }
 
     public Collection<Film> getPopular(int count) {

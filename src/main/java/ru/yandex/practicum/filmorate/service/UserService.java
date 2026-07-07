@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -17,6 +18,22 @@ public class UserService {
 
     public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
+    }
+
+    public Optional<User> getById(long userId) {
+        return userStorage.getById(userId);
+    }
+
+    public Collection<User> getAll() {
+        return userStorage.getAll();
+    }
+
+    public User create(User user) {
+        return userStorage.create(user);
+    }
+
+    public User update(User user) {
+        return userStorage.update(user);
     }
 
     public Collection<User> getFriends(long userId) {
