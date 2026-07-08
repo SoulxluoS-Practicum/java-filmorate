@@ -2,112 +2,76 @@ package ru.yandex.practicum.filmorate.controller;
 
 import ch.qos.logback.classic.Level;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 @Slf4j
 public class FilmController {
 
-    private static final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
-    private static final int MAX_DESC_LENGTH = 200;
-    private final Map<Long, Film> films = new HashMap<>();
+    private static final String FILM_LIKE_BY_USER_PATH = "/{id}/like/{userId}";
+    private static final String POPULAR_PATH = "/popular";
+    private final FilmService filmService;
 
-    public FilmController() {
+    static {
         ((ch.qos.logback.classic.Logger) log).setLevel(Level.DEBUG);
     }
 
+    @GetMapping("/{id}")
+    public Optional<Film> getById(@PathVariable long id) {
+        log.debug("Запрос на получение фильма по id = {}", id);
+        return filmService.getById(id);
+    }
+
     @GetMapping
-    public Collection<Film> getFilms() {
+    public Collection<Film> getAll() {
         log.debug("Запрос на получение списка фильмов");
-        return films.values();
+        return filmService.getAll();
     }
 
     @PostMapping
-    public Film createFilm(@Valid @RequestBody Film film) {
+    public Film create(@Valid @RequestBody Film film) {
         log.debug("Запрос на создание нового фильма");
-        validateName(film);
-        validateDescription(film);
-        validateReleaseDate(film);
-        validateDuration(film);
-        film.setId(getNextId());
-        films.put(film.getId(), film);
+        film = filmService.create(film);
         log.info("Создан новый фильм(id = {}, name = {})", film.getId(), film.getName());
         return film;
     }
 
     @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film) {
+    public Film update(@Valid @RequestBody Film film) {
         log.debug("Запрос на изменение данных фильма(id = {})", film.getId());
-        if (film.getId() == null) {
-            throw new ValidationException("Id изменяемого фильма не указан");
-        }
-        if (!films.containsKey(film.getId())) {
-            throw new ValidationException("Фильм с id = %s не найден", film.getId());
-        }
-        Film oldFilm = films.get(film.getId());
-        if (film.getName() != null) {
-            validateName(film);
-            log.debug("Изменение name фильма(id = {}): {} -> {}", film.getId(), oldFilm.getName(), film.getName());
-            oldFilm.setName(film.getName());
-        }
-        if (film.getDescription() != null) {
-            validateDescription(film);
-            log.debug("Изменение description фильма(id = {}): {} -> {}", film.getId(), oldFilm.getDescription(), film.getDescription());
-            oldFilm.setDescription(film.getDescription());
-        }
-        if (film.getReleaseDate() != null) {
-            validateReleaseDate(film);
-            log.debug("Изменение releaseDate фильма(id = {}): {} -> {}", film.getId(), oldFilm.getReleaseDate(), film.getReleaseDate());
-            oldFilm.setReleaseDate(film.getReleaseDate());
-        }
-        if (film.getDuration() != null) {
-            validateDuration(film);
-            log.debug("Изменение duration фильма(id = {}): {} -> {}", film.getId(), oldFilm.getDuration(), film.getDuration());
-            oldFilm.setDuration(film.getDuration());
-        }
-        log.info("Изменены данные фильма(id = {})", oldFilm.getId());
-        return oldFilm;
+        film = filmService.update(film);
+        log.info("Изменены данные фильма(id = {})", film.getId());
+        return film;
     }
 
-    private void validateName(Film film) {
-        if (film.getName().isBlank()) {
-            throw new ValidationException("Название фильма не должно быть пустым");
-        }
+    @PutMapping(FILM_LIKE_BY_USER_PATH)
+    public Film addLike(@PathVariable long id, @PathVariable long userId) {
+        log.debug("Запрос на добавления лайка(film id = {}, userId = {})", id, userId);
+        Film film = filmService.addLike(id, userId);
+        log.debug("Добавлен лайк(film id = {}, userId = {})", id, userId);
+        return film;
     }
 
-    private void validateDescription(Film film) {
-        if (film.getDescription().length() > MAX_DESC_LENGTH) {
-            throw new ValidationException("Описание фильма не должно быть длиннее %s символов", MAX_DESC_LENGTH);
-        }
+    @DeleteMapping(FILM_LIKE_BY_USER_PATH)
+    public Film deleteLike(@PathVariable long id, @PathVariable long userId) {
+        log.debug("Запрос на удаление лайка(film id = {}, userId = {})", id, userId);
+        Film film = filmService.removeLike(id, userId);
+        log.debug("Удален лайк(film id = {}, userId = {})", id, userId);
+        return film;
     }
 
-    private void validateReleaseDate(Film film) {
-        if (film.getReleaseDate().isBefore(MIN_DATE)) {
-            throw new ValidationException("Дата релиза фильма не должна быть раньше %s", MIN_DATE);
-        }
-    }
-
-    private void validateDuration(Film film) {
-        if (film.getDuration() < 1) {
-            throw new ValidationException("Продолжительность фильма должна быть положительным числом");
-        }
-    }
-
-    private long getNextId() {
-        long currentMaxId = films.keySet()
-            .stream()
-            .mapToLong(id -> id)
-            .max()
-            .orElse(0);
-        return ++currentMaxId;
+    @GetMapping(POPULAR_PATH)
+    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
+        log.debug("Запрос на получение списка популярных фильмов(count = {})", count);
+        return filmService.getPopular(count);
     }
 }
